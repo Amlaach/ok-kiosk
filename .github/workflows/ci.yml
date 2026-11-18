@@ -1,0 +1,37 @@
+name: CI (Open Source)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  leak-guard-and-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Leak Guard — verify no private security source or binary is tracked
+        shell: pwsh
+        run: |
+          $forbidden = git ls-files | Where-Object {
+            $_ -match '^(security|vendor/security|secrets)/' -or
+            $_ -match '\.(snk|pfx|key|pem)$' -or
+            $_ -match 'OkKiosk\.Security\.dll$'
+          }
+          if ($forbidden) {
+            Write-Error "SECURITY LEAK DETECTED in tracked files:`n$($forbidden -join "`n")"
+            exit 1
+          }
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore & Build (Open Stub Mode)
+        run: dotnet build OkKiosk.sln -c Release
+
+      - name: Run Unit Tests
+        run: dotnet test OkKiosk.sln -c Release --no-build

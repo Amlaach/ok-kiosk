@@ -1,0 +1,22 @@
+# Build outputs
+bin/
+obj/
+out/
+publish/
+.vs/
+*.user
+*.suo
+
+# Sensitive / Closed-Source Security Repo & Binaries (NEVER commit to public repo)
+security/
+vendor/security/
+*.snk
+*.pfx
+*.key
+*.pem
+secrets/
+
+# Test & IDE artifacts
+TestResults/
+.vscode/
+*.log

@@ -1,0 +1,74 @@
+name: Release Full OK Kiosk
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH Deploy Key for private security binary
+        shell: pwsh
+        env:
+          SSH_KEY: ${{ secrets.OKKIOSK_SECURITY_SSH_KEY }}
+        run: |
+          if (-not $env:SSH_KEY) {
+            Write-Error "Missing secret OKKIOSK_SECURITY_SSH_KEY! Add the unique SSH Deploy Key for Amlaach/ok-kiosk-security."
+            exit 1
+          }
+          New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" -Force | Out-Null
+          $keyPath = "$env:USERPROFILE\.ssh\id_ed25519_okkiosk_sec"
+          $env:SSH_KEY | Out-File -FilePath $keyPath -Encoding ascii -NoNewline
+          ssh-keyscan -t ed25519 github.com | Out-File -FilePath "$env:USERPROFILE\.ssh\known_hosts" -Encoding ascii -Append
+          @"
+          Host github-okkiosk-sec
+            HostName github.com
+            User git
+            IdentityFile $keyPath
+            IdentitiesOnly yes
+          "@ | Out-File -FilePath "$env:USERPROFILE\.ssh\config" -Encoding ascii
+
+      - name: Fetch prebuilt OkKiosk.Security.dll from private repo via unique SSH
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch bin git@github-okkiosk-sec:Amlaach/ok-kiosk-security.git _sec_bin
+          New-Item -ItemType Directory -Path "vendor/security" -Force | Out-Null
+          Copy-Item "_sec_bin/OkKiosk.Security.dll" "vendor/security/OkKiosk.Security.dll" -Force
+          Remove-Item "_sec_bin" -Recurse -Force
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish Full OkKiosk (win-x64)
+        run: |
+          dotnet publish src/OkKiosk.App/OkKiosk.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o dist/win-x64
+
+      - name: Package Release Artifacts & Checksums
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/win-x64/*" -DestinationPath "dist/OkKiosk-win-x64.zip" -Force
+          $hash = (Get-FileHash "dist/OkKiosk-win-x64.zip" -Algorithm SHA256).Hash.ToLower()
+          "$hash  OkKiosk-win-x64.zip" | Out-File -FilePath "dist/SHA256SUMS.txt" -Encoding ascii
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          files: |
+            dist/OkKiosk-win-x64.zip
+            dist/SHA256SUMS.txt

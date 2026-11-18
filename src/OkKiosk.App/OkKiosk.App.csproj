@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>OkKiosk</AssemblyName>
+    <RootNamespace>OkKiosk.App</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>OK Kiosk</Product>
+    <AssemblyTitle>OK Kiosk - Open Source Windows Kiosk</AssemblyTitle>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OkKiosk.Contracts\OkKiosk.Contracts.csproj" />
+  </ItemGroup>
+
+  <!-- Private hardened security binary (only present when fetched via unique SSH deploy key) -->
+  <ItemGroup Condition="Exists('..\..\vendor\security\OkKiosk.Security.dll')">
+    <Content Include="..\..\vendor\security\OkKiosk.Security.dll">
+      <Link>OkKiosk.Security.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
