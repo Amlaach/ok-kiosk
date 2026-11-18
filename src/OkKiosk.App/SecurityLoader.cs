@@ -62,6 +62,7 @@ internal sealed class OpenSecurityStub : IKioskSecurityProvider
     {
         private IReadOnlyList<AllowedProgram> _programs = Array.Empty<AllowedProgram>();
         public bool IsLocked { get; private set; }
+        public event Action? EmergencyHotkeyPressed { add { } remove { } }
 
         public void StartSoftLock(KioskLockOptions options) => IsLocked = true;
         public void StopSoftLock() => IsLocked = false;
@@ -109,6 +110,7 @@ internal sealed class OpenSecurityStub : IKioskSecurityProvider
     {
         private string? _devPassword;
         private string? _devRecovery;
+        private readonly List<string> _devBackupCodes = new();
 
         public bool HasPasswordConfigured() => !string.IsNullOrEmpty(_devPassword);
 
@@ -135,5 +137,32 @@ internal sealed class OpenSecurityStub : IKioskSecurityProvider
             _devRecovery == code
                 ? SecurityResult.Success()
                 : SecurityResult.Fail(SecurityErrorCode.WrongPassword, "קוד שחזור שגוי.");
+
+        public IReadOnlyList<string> GenerateBackupCodes(string password, int count = 15)
+        {
+            if (_devPassword != password)
+                throw new UnauthorizedAccessException("סיסמה שגויה.");
+            _devBackupCodes.Clear();
+            for (int i = 1; i <= count; i++)
+                _devBackupCodes.Add($"STUB-{i:0000}-CODE");
+            return _devBackupCodes.ToList();
+        }
+
+        public int GetRemainingBackupCodeCount() => _devBackupCodes.Count;
+
+        public SecurityResult VerifyBackupCode(string code)
+        {
+            int idx = _devBackupCodes.FindIndex(c => string.Equals(c, code.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (idx < 0)
+                return SecurityResult.Fail(SecurityErrorCode.WrongPassword, "קוד גיבוי שגוי.");
+            _devBackupCodes.RemoveAt(idx);
+            return SecurityResult.Success();
+        }
+
+        public SecurityResult VerifyAnyEmergencyCode(string code)
+        {
+            var r = VerifyRecoveryCode(code);
+            return r.Ok ? r : VerifyBackupCode(code);
+        }
     }
 }

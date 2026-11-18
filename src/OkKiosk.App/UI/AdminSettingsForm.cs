@@ -58,6 +58,14 @@ public sealed class AdminSettingsForm : Form
         var pwdBtn = new Button { Text = "הגדר / שנה סיסמת מנהל", AutoSize = true, Padding = new Padding(8, 4, 8, 4) };
         pwdBtn.Click += (_, _) => ChangePassword();
 
+        var backupBtn = new Button
+        {
+            Text = $"הנפק 15 קודי גיבוי חד-פעמיים (זמינים: {_security.Vault.GetRemainingBackupCodeCount()})",
+            AutoSize = true,
+            Padding = new Padding(8, 4, 8, 4)
+        };
+        backupBtn.Click += (_, _) => GenerateAndShowBackupCodes(backupBtn);
+
         _chkTaskMgr = new CheckBox { Text = "חסימת מנהל המשימות (Task Manager)", Checked = _config.BlockTaskManager, AutoSize = true };
         _chkHook = new CheckBox { Text = "חסימת קיצורי מערכת (Win / Alt+Tab / Alt+F4)", Checked = _config.InstallKeyboardHook, AutoSize = true };
         _chkExplorer = new CheckBox { Text = "הסתרת שולחן עבודה ושורת משימות (explorer.exe)", Checked = _config.KillExplorer, AutoSize = true };
@@ -79,7 +87,7 @@ public sealed class AdminSettingsForm : Form
             MessageBox.Show(this, r.Message ?? (r.Ok ? "השירות הותקן בהצלחה." : "התקנה נכשלה."), "OK Kiosk");
         };
 
-        secFlow.Controls.AddRange([pwdBtn, _chkTaskMgr, _chkHook, _chkExplorer, _chkUsb, hardLabel, installSvcBtn]);
+        secFlow.Controls.AddRange([pwdBtn, backupBtn, _chkTaskMgr, _chkHook, _chkExplorer, _chkUsb, hardLabel, installSvcBtn]);
         tabSec.Controls.Add(secFlow);
 
         tabs.TabPages.Add(tabApps);
@@ -157,5 +165,76 @@ public sealed class AdminSettingsForm : Form
             ? $"הסיסמה נשמרה.\n\nקוד שחזור חד-פעמי (שמור במקום בטוח!):\n{recoveryCode}"
             : "הסיסמה עודכנה בהצלחה.";
         MessageBox.Show(this, msg, "OK Kiosk", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private void GenerateAndShowBackupCodes(Button backupBtn)
+    {
+        if (!_security.Vault.HasPasswordConfigured())
+        {
+            MessageBox.Show(this, "יש להגדיר סיסמת מנהל לפני הנפקת קודי גיבוי.", "OK Kiosk",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        using var pwdDlg = new Form
+        {
+            Text = "אימות סיסמה להנפקת קודי גיבוי",
+            Size = new Size(340, 150),
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            RightToLeft = RightToLeft.Yes,
+            RightToLeftLayout = true
+        };
+        var tb = new TextBox { UseSystemPasswordChar = true, Dock = DockStyle.Top, PlaceholderText = "הזן סיסמת מנהל" };
+        var ok = new Button { Text = "הנפק 15 קודים", DialogResult = DialogResult.OK, Dock = DockStyle.Bottom, Height = 34 };
+        pwdDlg.Controls.Add(tb);
+        pwdDlg.Controls.Add(ok);
+        pwdDlg.AcceptButton = ok;
+
+        if (pwdDlg.ShowDialog(this) != DialogResult.OK) return;
+
+        try
+        {
+            var codes = _security.Vault.GenerateBackupCodes(tb.Text, 15);
+            backupBtn.Text = $"הנפק 15 קודי גיבוי חד-פעמיים (זמינים: {_security.Vault.GetRemainingBackupCodeCount()})";
+            string allText = string.Join(Environment.NewLine, codes.Select((c, i) => $"{i + 1:00}. {c}"));
+
+            using var showDlg = new Form
+            {
+                Text = "15 קודי גיבוי חד-פעמיים (לשמירה במקום בטוח)",
+                Size = new Size(420, 440),
+                StartPosition = FormStartPosition.CenterParent,
+                RightToLeft = RightToLeft.Yes,
+                RightToLeftLayout = true
+            };
+            var box = new TextBox
+            {
+                Multiline = true,
+                ReadOnly = true,
+                ScrollBars = ScrollBars.Vertical,
+                Dock = DockStyle.Fill,
+                Font = new Font("Consolas", 11f),
+                Text = allText
+            };
+            var btns = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 42 };
+            var copyBtn = new Button { Text = "העתק ללוח", AutoSize = true };
+            copyBtn.Click += (_, _) => { Clipboard.SetText(allText); MessageBox.Show(showDlg, "הועתק ללוח."); };
+            var saveBtn = new Button { Text = "שמור לקובץ...", AutoSize = true };
+            saveBtn.Click += (_, _) =>
+            {
+                using var sfd = new SaveFileDialog { Filter = "Text (*.txt)|*.txt", FileName = "ok-kiosk-backup-codes.txt" };
+                if (sfd.ShowDialog(showDlg) == DialogResult.OK)
+                    File.WriteAllText(sfd.FileName, allText);
+            };
+            btns.Controls.Add(copyBtn);
+            btns.Controls.Add(saveBtn);
+            showDlg.Controls.Add(box);
+            showDlg.Controls.Add(btns);
+            showDlg.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "OK Kiosk", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

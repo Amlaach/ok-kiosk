@@ -125,6 +125,7 @@ public sealed class KioskLauncherForm : Form
         _clockTimer = new System.Windows.Forms.Timer { Interval = 1000 };
         _clockTimer.Tick += (_, _) => UpdateClock();
         _clockTimer.Start();
+        _security.Guard.EmergencyHotkeyPressed += OnEmergencyHotkey;
         UpdateClock();
         RefreshSecurityBadge();
         RefreshAppsGrid();
@@ -271,15 +272,19 @@ public sealed class KioskLauncherForm : Form
 
         if (_security.Guard.IsLocked)
         {
-            var pwd = PromptPassword("הזן סיסמת מנהל לשחרור הנעילה:");
+            var pwd = PromptPassword("הזן סיסמת מנהל (או קוד שחזור/גיבוי) לשחרור הנעילה:");
             if (pwd is null) return;
 
             var res = _security.Vault.VerifyPassword(pwd);
             if (!res.Ok)
             {
-                MessageBox.Show(this, res.Message ?? "סיסמה שגויה.", "OK Kiosk",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                var emergencyRes = _security.Vault.VerifyAnyEmergencyCode(pwd);
+                if (!emergencyRes.Ok)
+                {
+                    MessageBox.Show(this, res.Message ?? "סיסמה או קוד שגויים.", "OK Kiosk",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
             ApplyLockState(false);
         }
@@ -287,6 +292,28 @@ public sealed class KioskLauncherForm : Form
         {
             ApplyLockState(true);
         }
+    }
+
+    private void OnEmergencyHotkey()
+    {
+        if (IsDisposed) return;
+        BeginInvoke(() =>
+        {
+            if (!_security.Guard.IsLocked) return;
+            var code = PromptPassword("שחרור חירום (Ctrl+Alt+Shift+F12) — הזן קוד שחזור ראשי או קוד גיבוי חד-פעמי:");
+            if (string.IsNullOrWhiteSpace(code)) return;
+
+            var res = _security.Vault.VerifyAnyEmergencyCode(code);
+            if (!res.Ok)
+            {
+                MessageBox.Show(this, res.Message ?? "קוד שגוי.", "שחרור חירום — OK Kiosk",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            ApplyLockState(false);
+            MessageBox.Show(this, "הקיוסק שוחרר באמצעות קוד שחזור.", "OK Kiosk",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        });
     }
 
     private void ApplyLockState(bool lockOn)

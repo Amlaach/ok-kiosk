@@ -49,6 +49,7 @@ public sealed record HardLockStatus(
 public interface IKioskGuard
 {
     bool IsLocked { get; }
+    event Action? EmergencyHotkeyPressed;
     void StartSoftLock(KioskLockOptions options);
     void StopSoftLock();
     void SetAllowedPrograms(IReadOnlyList<AllowedProgram> programs);
@@ -79,6 +80,10 @@ public interface ISecretVault
     SecurityResult SetPassword(string? oldPassword, string newPassword, out string? recoveryCode);
     SecurityResult VerifyPassword(string password);
     SecurityResult VerifyRecoveryCode(string code);
+    IReadOnlyList<string> GenerateBackupCodes(string password, int count = 15);
+    int GetRemainingBackupCodeCount();
+    SecurityResult VerifyBackupCode(string code);
+    SecurityResult VerifyAnyEmergencyCode(string code);
 }
 
 /// <summary>

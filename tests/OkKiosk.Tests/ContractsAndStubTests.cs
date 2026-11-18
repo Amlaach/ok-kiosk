@@ -34,6 +34,13 @@ public class ContractsAndStubTests
         Assert.False(string.IsNullOrWhiteSpace(recovery));
         Assert.True(provider.Vault.VerifyPassword("1234").Ok);
         Assert.False(provider.Vault.VerifyPassword("wrong").Ok);
+
+        var backups = provider.Vault.GenerateBackupCodes("1234", 15);
+        Assert.Equal(15, backups.Count);
+        Assert.Equal(15, provider.Vault.GetRemainingBackupCodeCount());
+        Assert.True(provider.Vault.VerifyAnyEmergencyCode(backups[0]).Ok);
+        Assert.Equal(14, provider.Vault.GetRemainingBackupCodeCount());
+        Assert.False(provider.Vault.VerifyAnyEmergencyCode(backups[0]).Ok);
     }
 
     [Fact]
