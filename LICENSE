@@ -1,21 +1,108 @@
-MIT License
+OK Kiosk Non-Commercial Source-Available License (OK-NC-1.0)
+Version 1.0 — November 2026
 
-Copyright (c) 2026 Amlaach
+Copyright (c) 2026 Amlaach (https://github.com/Amlaach/ok-kiosk)
+All rights reserved except as expressly granted herein.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. DEFINITIONS
+   1.1 "Software" means the source code, object code, binaries, documentation,
+       configuration files, and any other materials contained in the Official
+       Repository.
+   1.2 "Licensor" means Amlaach, the original author and copyright holder of the
+       Software.
+   1.3 "Official Repository" means https://github.com/Amlaach/ok-kiosk and any
+       successor repository designated by the Licensor.
+   1.4 "You" (or "Licensee") means any individual, organization, or legal entity
+       exercising rights under this License, including any affiliates,
+       subsidiaries, contractors, agents, or proxies acting on its behalf.
+   1.5 "Modification" or "Derivative Work" means any fork, clone, branch, patch,
+       adaptation, translation, compilation, wrapper, or work based upon or
+       incorporating any portion of the Software.
+   1.6 "Commercial Use" means any use, reproduction, modification, distribution,
+       or deployment of the Software or any Derivative Work for direct or indirect
+       commercial advantage or monetary compensation, including but not limited
+       to:
+       (a) Selling, licensing, sublicensing, renting, leasing, or charging any
+           fee for access to, distribution of, installation of, or use of the
+           Software or any Derivative Work;
+       (b) Any use by or on behalf of a for-profit business or commercial entity
+           (including internal business operations, employee/customer kiosks,
+           point-of-sale or retail terminals, paid managed services, SaaS,
+           hosting, consulting, or support contracts), regardless of whether a
+           direct fee is charged to end users;
+       (c) Bundling, pre-installing, or packaging the Software or any Derivative
+           Work with commercial hardware, commercial software, or paid services,
+           or using it as a promotional tool, loss leader, freemium tier, or
+           ad-supported offering;
+       (d) Soliciting or accepting donations, sponsorships, bounties, or
+           "voluntary" payments as a condition, expectation, or exchange for
+           access, custom builds, features, or priority support;
+       (e) Any indirect arrangement, shell entity, non-profit proxy, split
+           licensing, or technical wrapper designed to evade these restrictions.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. LIMITED GRANT OF RIGHTS (NON-COMMERCIAL ONLY)
+   Subject to strict compliance with all terms and conditions of this License,
+   the Licensor grants You a revocable, non-exclusive, non-transferable,
+   non-sublicensable, royalty-free license to view, copy, fork, compile, modify,
+   and use the Software solely for personal, educational, or other strictly
+   Non-Commercial purposes.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+3. STRICT PROHIBITIONS AND ANTI-CIRCUMVENTION
+   3.1 No Commercial Use: You may NOT engage in any Commercial Use of the
+       Software or any Derivative Work without a separate, written commercial
+       license signed by the Licensor.
+   3.2 No Relicensing or Sublicensing: You may NOT relicense, sublicense, or
+       distribute the Software or any Derivative Work under MIT, GPL, Apache,
+       BSD, proprietary, or any other license terms. Any fork, copy, or
+       Derivative Work you distribute or publish MUST remain governed
+       exclusively by this License.
+   3.3 Preservation of Notices: You may NOT remove, alter, obscure, or bypass
+       any copyright notice, attribution, link to the Official Repository, or
+       this License file.
+   3.4 No Technical Evasion: You may NOT wrap, obfuscate, or repackage the
+       Software (e.g., as a closed binary, API, or library) to circumvent the
+       restrictions of this License.
+   3.5 Separate Private Components: This License applies solely to the public
+       Official Repository and grants no rights whatsoever to any private or
+       closed-source repositories or binaries (including Amlaach/ok-kiosk-security).
+   3.6 No Trademark Rights: Nothing in this License grants any right to use the
+       names, trademarks, or branding of "OK Kiosk", "Amlaach", or "אחת שאלתי"
+       for endorsement or promotional purposes.
+
+4. INBOUND LICENSE TO LICENSOR (FORKS, CLONES, AND DERIVATIVE WORKS)
+   4.1 As an express condition of the rights granted to You under Section 2,
+       by forking, cloning, copying, modifying, or publishing any Modification
+       or Derivative Work of the Software (including via GitHub forks, public
+       repositories, pull requests, patches, or code snippets), You irrevocably
+       grant to the Licensor a perpetual, worldwide, royalty-free,
+       non-exclusive, transferable, and sublicensable license to inspect, copy,
+       reproduce, modify, adapt, merge, compile, distribute, relicense, and
+       incorporate any or all of your Modifications, forks, clones, and
+       Derivative Works into the Official Repository or any other project,
+       product, or release of the Licensor (including closed-source or
+       commercial releases), without any obligation of payment, accounting, or
+       further consent.
+   4.2 To the fullest extent permitted by applicable law, You waive any moral
+       rights or similar claims that would restrict the Licensor from exercising
+       the rights granted in Section 4.1.
+
+5. AUTOMATIC TERMINATION
+   Any breach of this License—including any unauthorized Commercial Use,
+   attempted relicensing, or removal of notices—shall automatically and
+   immediately terminate all rights granted to You under this License without
+   notice. Upon termination, You must immediately cease all use of the Software
+   and destroy all copies in your possession or control. Sections 1, 3.5, 4, 6,
+   and 7 shall survive termination.
+
+6. DISCLAIMER OF WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, SYSTEM STABILITY, SECURITY, AND
+   NON-INFRINGEMENT. THIS SOFTWARE MODIFIES OPERATING SYSTEM SETTINGS AND
+   LOCKDOWN CONTROLS; YOU ASSUME ALL RISKS ASSOCIATED WITH ITS USE.
+
+7. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL THE LICENSOR OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+   DAMAGES, DATA LOSS, SYSTEM LOCKOUT, OR OTHER LIABILITY, WHETHER IN AN ACTION
+   OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH
+   THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
